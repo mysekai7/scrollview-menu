@@ -16,7 +16,7 @@
 
 @interface ScrollViewBaseController () <UIScrollViewDelegate, SubScrollDelegate>
 
-
+@property (nonatomic, strong) UIView *navView;
 
 @property (nonatomic, strong) UIView *headerView;
 
@@ -44,11 +44,45 @@
     [self addController];
     
     [self createHeaderView];
+    
+    [self createNavView];
 
     
     self.segCtrl.sectionTitles = @[@"one", @"two", @"three"];
 
     [self segmentedControlChangedValue:self.segCtrl];
+}
+
+- (void)createNavView
+{
+    UIView *navView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, navBarHeight)];
+    navView.backgroundColor = [UIColor redColor];
+    
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 32, kScreenWidth, 20)];
+    titleLabel.text = @"李小南";
+    titleLabel.font = [UIFont systemFontOfSize:17];
+    titleLabel.textAlignment = NSTextAlignmentCenter;
+    [_navView addSubview:titleLabel];
+    
+    navView.alpha = 0;
+    [self.view addSubview:navView];
+    self.navView = navView;
+}
+
+- (void)setupNavBarWithOffsetY:(CGFloat)offsetY
+{
+    CGFloat alpha = 0;
+    CGFloat originalOffsetY = 0;
+    
+    if (offsetY < originalOffsetY) {
+        alpha = 0;
+    } else if(offsetY <= (headerViewHeight - navBarHeight - segmentBarHeight) && offsetY >= originalOffsetY) {
+        alpha = offsetY / (headerViewHeight - navBarHeight - segmentBarHeight);
+    } else { // 标题栏固定在顶部时
+        alpha = 1;
+    }
+    
+    self.navView.alpha = alpha;
 }
 
 - (void)createHeaderView
@@ -154,6 +188,7 @@
     
     BaseViewController *targetVC = self.childViewControllers[toIndex];
     targetVC.delegate = self;
+
     self.currentController = targetVC;
     
     if ([targetVC isViewLoaded]) {
@@ -200,6 +235,8 @@
         self.headerView.frame = rect;
     }
 
+    [self setupNavBarWithOffsetY:offsetY];
+    
     [self followScrollingScrollView:scrollView distanceY:offsetY];
 }
 /// 停止拖拽
@@ -210,7 +247,8 @@
 /// 结束滚动
 - (void)subScrollDidEndDecelerating:(UIScrollView *)scrollView
 {
-
+    CGFloat offsetY = scrollView.contentOffset.y;
+    [self setupNavBarWithOffsetY:offsetY];
 }
 /// 滚动到顶部
 - (void)subScrollDidScrollToTop:(UIScrollView *)scrollView

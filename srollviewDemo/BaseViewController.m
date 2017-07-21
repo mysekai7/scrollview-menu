@@ -24,6 +24,11 @@
     
 }
 
+- (void)setHeaderView:(UIView *)headerView
+{
+    self.tableView.tableHeaderView = headerView;
+}
+
 - (void)createTableView
 {
     _tableView = [[UITableView alloc] initWithFrame:[UIScreen mainScreen].bounds];

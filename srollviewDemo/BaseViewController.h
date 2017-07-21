@@ -11,7 +11,7 @@
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 #define headerViewHeight 200 // 头部图片刚开始显示的高度（实际高度并不是200）
-#define navBarHeight 64  // 导航栏加状态栏高度
+#define navBarHeight 0  // 导航栏加状态栏高度
 #define segmentBarHeight 40
 
 @protocol SubScrollDelegate <NSObject>
@@ -33,5 +33,6 @@
 
 @property (nonatomic, strong, readonly) UITableView *tableView;
 @property (nonatomic, assign) id <SubScrollDelegate> delegate;
+//@property (nonatomic, strong) UIView *headerView;
 
 @end
