@@ -7,12 +7,6 @@
 //
 
 #import "ScrollViewBaseController.h"
-#import "BaseViewController.h"
-#import <HMSegmentedControl/HMSegmentedControl.h>
-
-#import "OneViewController.h"
-#import "TwoViewController.h"
-#import "ThreeViewController.h"
 
 @interface ScrollViewBaseController () <UIScrollViewDelegate, SubScrollDelegate>
 
@@ -20,15 +14,14 @@
 
 @property (nonatomic, strong) UIView *headerView;
 
-@property (nonatomic, strong) UIScrollView *scrollview;
-
-@property (nonatomic, assign) NSInteger currentIndex; // 当前页面索引
-
-@property (nonatomic, strong) HMSegmentedControl *segCtrl;
-
-@property (nonatomic, strong) BaseViewController *currentController; // 当前控制器
+@property (nonatomic, assign, readwrite) NSInteger currentIndex; // 当前页面索引
 
 @property (nonatomic, assign) CGFloat distanceY; // 多个页面同步偏移量
+
+@property (nonatomic, assign) BOOL lockDidScrollView;
+
+//headerViewHeight
+@property (nonatomic, assign) CGFloat headerViewHeight;
 
 @end
 
@@ -38,25 +31,58 @@
     [super viewDidLoad];
     
      self.edgesForExtendedLayout = UIRectEdgeNone;
+    
+    self.navigationController.navigationBar.hidden = !self.configration.showNavigation;
+    
+    self.lockDidScrollView = YES;
+    
+    [self checkParams]; //检查参数
 
-    [self createMainScrollView];
+    [self createMainScrollView]; //主scrollview
     
-    [self addController];
+    [self addController]; //控制器
     
-    [self createHeaderView];
+    [self createHeaderView]; //头部视图
     
-    [self createNavView];
+    [self createNavView]; //导航
 
-    
-    self.segCtrl.sectionTitles = @[@"one", @"two", @"three"];
+    [self segmentedControlChangedValue:self.segCtrl]; //初始化菜单
+}
 
-    [self segmentedControlChangedValue:self.segCtrl];
+- (void)checkParams{
+    
+    NSAssert(self.viewControllers.count != 0 || self.viewControllers, @"ViewControllers`count is 0 or nil");
+    NSAssert(self.titleArrayM.count != 0 || self.titleArrayM, @"titleArray`count is 0 or nil,");
+    NSAssert(self.viewControllers.count == self.titleArrayM.count, @"ViewControllers`count is  not equal titleArray!");
+    
+    BOOL isHasNotEqualTitle = YES;
+    for (int i = 0; i < self.titleArrayM.count; i++) {
+        for (int j = 1; j < self.titleArrayM.count; j++) {
+            
+            if (i != j && [self.titleArrayM[i] isEqualToString:self.titleArrayM[j]]) {
+                isHasNotEqualTitle = NO;
+                break;
+            }
+        }
+    }
+    NSAssert(isHasNotEqualTitle, @"titleArray Not allow equal title.");
+}
+
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    self.lockDidScrollView = NO;
 }
 
 - (void)createNavView
 {
-    UIView *navView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, navBarHeight)];
+    CGFloat deltaHeight = !self.configration.showNavigation ? navBarHeight : 0;
+    
+    UIView *navView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, deltaHeight)];
     navView.backgroundColor = [UIColor redColor];
+    navView.hidden = self.configration.showNavigation;
     
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 32, kScreenWidth, 20)];
     titleLabel.text = @"李小南";
@@ -69,38 +95,48 @@
     self.navView = navView;
 }
 
+- (void)createHeaderView
+{
+    //头部视图
+    _headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, segmentBarHeight)];
+    _headerView.backgroundColor = [UIColor whiteColor];
+    
+    
+    CGFloat headViewHeight = 0;
+    if (self.headView) {
+        headViewHeight = self.headView.frame.size.height;
+        [_headerView addSubview:self.headView];
+    }
+    
+    //菜单
+    _segCtrl = [[HMSegmentedControl alloc] initWithFrame:CGRectMake(0, headViewHeight, kScreenWidth, segmentBarHeight)];
+    _segCtrl.backgroundColor = [UIColor redColor];
+    _segCtrl.selectedSegmentIndex = 0;
+    [_segCtrl addTarget:self action:@selector(segmentedControlChangedValue:) forControlEvents:UIControlEventValueChanged];
+    _segCtrl.sectionTitles = self.titleArrayM;
+    [_headerView addSubview:_segCtrl];
+    [self.view addSubview:_headerView];
+    self.headerView.frame = CGRectMake(0, 0, kScreenWidth, headViewHeight + segmentBarHeight);
+    
+    self.headerViewHeight = self.headerView.frame.size.height;
+}
+
 - (void)setupNavBarWithOffsetY:(CGFloat)offsetY
 {
     CGFloat alpha = 0;
     CGFloat originalOffsetY = 0;
     
+    CGFloat deltaHeight = !self.configration.showNavigation ? navBarHeight : 0;
+    
     if (offsetY < originalOffsetY) {
         alpha = 0;
-    } else if(offsetY <= (headerViewHeight - navBarHeight - segmentBarHeight) && offsetY >= originalOffsetY) {
-        alpha = offsetY / (headerViewHeight - navBarHeight - segmentBarHeight);
+    } else if(offsetY <= (self.headerViewHeight - deltaHeight - segmentBarHeight) && offsetY >= originalOffsetY) {
+        alpha = offsetY / (self.headerViewHeight - deltaHeight - segmentBarHeight);
     } else { // 标题栏固定在顶部时
         alpha = 1;
     }
     
     self.navView.alpha = alpha;
-}
-
-- (void)createHeaderView
-{
-    //头部视图
-    _headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, headerViewHeight)];
-    _headerView.backgroundColor = [UIColor whiteColor];
-    _headerView.alpha = 0.4;
-    
-    //菜单
-    _segCtrl = [[HMSegmentedControl alloc] initWithFrame:CGRectMake(0, headerViewHeight - segmentBarHeight, kScreenWidth, segmentBarHeight)];
-    _segCtrl.backgroundColor = [UIColor redColor];
-    _segCtrl.selectedSegmentIndex = 0;
-    [_segCtrl addTarget:self action:@selector(segmentedControlChangedValue:) forControlEvents:UIControlEventValueChanged];
-    
-    [_headerView addSubview:_segCtrl];
-    
-    [self.view addSubview:_headerView];
 }
 
 - (void)segmentedControlChangedValue:(HMSegmentedControl*)sender {
@@ -122,14 +158,9 @@
 
 - (void)addController
 {
-    OneViewController *oneVC = [[OneViewController alloc] init];
-    TwoViewController *twoVC = [[TwoViewController alloc] init];
-    ThreeViewController *threeVC = [[ThreeViewController alloc] init];
-    
-    [self addChildViewController:oneVC];
-    [self addChildViewController:twoVC];
-    [self addChildViewController:threeVC];
-    
+    for (int i=0; i<self.viewControllers.count; i++) {
+        [self addChildViewController:[self.viewControllers objectAtIndex:i]];
+    }
 }
 
 - (void)createMainScrollView
@@ -142,13 +173,15 @@
     _scrollview.delegate = self;
     _scrollview.pagingEnabled = YES;
     _scrollview.bounces = YES;
-    //_scrollview.showsHorizontalScrollIndicator = NO;
-    _scrollview.contentSize = CGSizeMake(self.view.frame.size.width * 3, 0);
+    _scrollview.showsHorizontalScrollIndicator = NO;
+    _scrollview.contentSize = CGSizeMake(self.view.frame.size.width * self.viewControllers.count, 0);
     [self.view addSubview:_scrollview];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView;
 {
+    if (self.lockDidScrollView) return;
+    
     if (scrollView == self.scrollview) {
         
         
@@ -219,12 +252,14 @@
     CGFloat offsetY = scrollView.contentOffset.y;
     NSLog(@"offsetY: %lf", offsetY);
     
-    if (offsetY >= headerViewHeight - navBarHeight - segmentBarHeight) { //到达导航栏底部
+    CGFloat deltaHeight =  !self.configration.showNavigation ? navBarHeight : 0;
+    
+    if (offsetY >= self.headerViewHeight - deltaHeight - segmentBarHeight) { //到达导航栏底部
         //固定
         NSLog(@"fix菜单");
         
         CGRect rect = self.headerView.frame;
-        rect.origin.y = -(headerViewHeight - navBarHeight - segmentBarHeight);
+        rect.origin.y = -(self.headerViewHeight - deltaHeight - segmentBarHeight);
         self.headerView.frame = rect;
     } else {
         //随滑动移动菜单
@@ -259,8 +294,10 @@
 // 所有子控制器上的特定scrollView同时联动
 - (void)followScrollingScrollView:(UIScrollView *)scrollingScrollView distanceY:(CGFloat)distanceY{
     
-    if (distanceY > headerViewHeight - navBarHeight - segmentBarHeight) {
-        _distanceY = headerViewHeight - navBarHeight - segmentBarHeight;
+    CGFloat deltaHeight =  !self.configration.showNavigation ? navBarHeight : 0;
+    
+    if (distanceY > self.headerViewHeight - deltaHeight - segmentBarHeight) {
+        _distanceY = self.headerViewHeight - deltaHeight - segmentBarHeight;
         return;
     }
     _distanceY = distanceY;
@@ -278,4 +315,28 @@
         baseVc.tableView.contentOffset = contentOffSet;
     }
 }
+
+- (CGFloat)parentHeaderViewHeight
+{
+    return self.headerViewHeight;
+}
+
+#pragma mark - Public Mehtod
+
++ (instancetype)pageScrollViewControllerWithControllers:(NSArray *)viewControllers titles:(NSArray *)titleArrayM Configration:(ScrollMenuConfigration *)configration{
+    
+    ScrollViewBaseController *viewController =  [[self alloc] initWithControllers:viewControllers titles:titleArrayM Configration:configration];
+    
+    return viewController;
+}
+
+- (instancetype)initWithControllers:(NSArray *)viewControllers titles:(NSArray *)titleArrayM Configration:(ScrollMenuConfigration *)configration {
+    if (self = [super init]) {
+        self.viewControllers = viewControllers.mutableCopy;
+        self.titleArrayM = titleArrayM.mutableCopy;
+        self.configration = configration ? configration : [ScrollMenuConfigration pageScrollViewMenuConfigration];
+    }
+    return self;
+}
+
 @end

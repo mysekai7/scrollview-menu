@@ -41,7 +41,7 @@
 - (void)createHeaderView
 {
     // header rect 改成子类代理
-    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, headerViewHeight)];
+    UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, [self.delegate parentHeaderViewHeight])];
     headerView.backgroundColor = [UIColor darkGrayColor];
     self.tableView.tableHeaderView = headerView;
 }

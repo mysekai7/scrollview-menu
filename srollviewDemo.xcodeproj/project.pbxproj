@@ -19,6 +19,7 @@
 		7F41B6C01F206D6300E09C89 /* OneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F41B6BF1F206D6300E09C89 /* OneViewController.m */; };
 		7F41B6C31F206D7B00E09C89 /* TwoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F41B6C21F206D7B00E09C89 /* TwoViewController.m */; };
 		7F41B6C61F206D8E00E09C89 /* ThreeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F41B6C51F206D8E00E09C89 /* ThreeViewController.m */; };
+		7F420C431F21CD7B007100CA /* ScrollMenuConfigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F420C421F21CD7B007100CA /* ScrollMenuConfigration.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,9 @@
 		7F41B6C21F206D7B00E09C89 /* TwoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwoViewController.m; sourceTree = "<group>"; };
 		7F41B6C41F206D8E00E09C89 /* ThreeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreeViewController.h; sourceTree = "<group>"; };
 		7F41B6C51F206D8E00E09C89 /* ThreeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreeViewController.m; sourceTree = "<group>"; };
+		7F420C411F21CD7B007100CA /* ScrollMenuConfigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScrollMenuConfigration.h; sourceTree = "<group>"; };
+		7F420C421F21CD7B007100CA /* ScrollMenuConfigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScrollMenuConfigration.m; sourceTree = "<group>"; };
+		7F420C441F21D094007100CA /* SrollViewMenuConstant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SrollViewMenuConstant.h; sourceTree = "<group>"; };
 		BA2315FA0E457093766655B8 /* Pods-srollviewDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-srollviewDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-srollviewDemo/Pods-srollviewDemo.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -99,6 +103,9 @@
 				7F41B6C21F206D7B00E09C89 /* TwoViewController.m */,
 				7F41B6C41F206D8E00E09C89 /* ThreeViewController.h */,
 				7F41B6C51F206D8E00E09C89 /* ThreeViewController.m */,
+				7F420C411F21CD7B007100CA /* ScrollMenuConfigration.h */,
+				7F420C421F21CD7B007100CA /* ScrollMenuConfigration.m */,
+				7F420C441F21D094007100CA /* SrollViewMenuConstant.h */,
 			);
 			path = srollviewDemo;
 			sourceTree = "<group>";
@@ -259,6 +266,7 @@
 			files = (
 				7F41B6C31F206D7B00E09C89 /* TwoViewController.m in Sources */,
 				7F41B6A01F204F9000E09C89 /* ViewController.m in Sources */,
+				7F420C431F21CD7B007100CA /* ScrollMenuConfigration.m in Sources */,
 				7F41B6BD1F2068D900E09C89 /* BaseViewController.m in Sources */,
 				7F41B69D1F204F9000E09C89 /* AppDelegate.m in Sources */,
 				7F41B6C01F206D6300E09C89 /* OneViewController.m in Sources */,

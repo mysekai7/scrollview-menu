@@ -21,8 +21,6 @@
     self.view.backgroundColor = [UIColor whiteColor];
 
     
-    //self.navigationController.navigationBar.hidden = YES;
-    
 }
 
 

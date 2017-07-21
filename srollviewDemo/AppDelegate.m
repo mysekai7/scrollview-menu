@@ -8,6 +8,11 @@
 
 #import "AppDelegate.h"
 #import "ViewController.h"
+#import "ScrollMenuConfigration.h"
+
+#import "OneViewController.h"
+#import "TwoViewController.h"
+#import "ThreeViewController.h"
 
 @interface AppDelegate ()
 
@@ -22,7 +27,29 @@
     self.window = [[UIWindow alloc]init];
     self.window.frame = [UIScreen mainScreen].bounds;
     
-    ViewController *vc = [[ViewController alloc] init];
+    //配置
+    ScrollMenuConfigration *config = [ScrollMenuConfigration pageScrollViewMenuConfigration];
+    config.showNavigation = NO;
+    
+    //子控制器
+    NSArray *viewControllers = @[
+                                    [OneViewController new],
+                                    [TwoViewController new],
+                                    [ThreeViewController new]
+                                 ];
+    
+    //菜单标题
+    NSArray *titles = @[@"one", @"two", @"three"];
+    
+    //主控制器初始化
+    ViewController *vc = [ViewController pageScrollViewControllerWithControllers:viewControllers
+                                                                          titles:titles
+                                                                    Configration:config];
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 200)];
+    view.backgroundColor = [UIColor blueColor];
+    [view addSubview:[UIButton buttonWithType:UIButtonTypeContactAdd]];
+    vc.headView = view;
+    
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
     
     [self.window setRootViewController:nav];

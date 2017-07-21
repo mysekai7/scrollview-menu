@@ -7,12 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-#define kScreenWidth [UIScreen mainScreen].bounds.size.width
-#define kScreenHeight [UIScreen mainScreen].bounds.size.height
-#define headerViewHeight 200 // 头部图片刚开始显示的高度（实际高度并不是200）
-#define navBarHeight 0  // 导航栏加状态栏高度
-#define segmentBarHeight 40
+#import "SrollViewMenuConstant.h"
 
 @protocol SubScrollDelegate <NSObject>
 
@@ -26,6 +21,8 @@
 - (void)subScrollDidEndDecelerating:(UIScrollView *)scrollView;
 /// 滚动到顶部
 - (void)subScrollDidScrollToTop:(UIScrollView *)scrollView;
+
+- (CGFloat)parentHeaderViewHeight;
 
 @end
 
